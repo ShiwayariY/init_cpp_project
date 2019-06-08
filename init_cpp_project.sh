@@ -2,6 +2,11 @@
 
 target_dir=${1:?'Error: no target directory specified.'}
 
+if [ -a "$target_dir" ]; then
+	echo "Error: file '${target_dir}' already exists"
+	exit
+fi
+
 mkdir ${target_dir}
 cd ${target_dir}
 mkdir src bin include build
@@ -18,8 +23,6 @@ BIN_DIR=bin/
 BUILD_DIR=build/
 SRC_DIR=src/
 INCLUDE_DIR=include/
-INCLUDE_EXT := ${shell sed -e '"'"'s/^/-I"/'"'"' -e '"'"'s/$$/"/'"'"' includes | tr '"'"'\n'"'"' '"'"' '"'"'}
-LIB_EXT := ${shell sed -e '"'"'s/^/-L"/'"'"' -e '"'"'s/$$/"/'"'"' libs | tr '"'"'\n'"'"' '"'"' '"'"'}
 
 OBJ_NAMES=
 BIN_NAMES='"$(basename ${target_dir})"'
@@ -31,10 +34,10 @@ LIBS=
 all: ${TARGETS}
 
 ${TARGETS}: ${BIN_DIR}/%: ${SRC_DIR}/%.cc ${OBJS} 
-	${CXX} ${CXXFLAGS} -o $@ $^ -I"${INCLUDE_DIR}" ${INCLUDE_EXT} ${LIB_EXT} ${LIBS}
+	${CXX} ${CXXFLAGS} -o $@ $^ -I"${INCLUDE_DIR}" $$(depfinder.sh . $<)
 	
 ${OBJS}: ${BUILD_DIR}/%.o: ${SRC_DIR}/%.cc  ${INCLUDE_DIR}/%.hh
-	${CXX} ${CXXFLAGS} -c -o $@ $< -I"${INCLUDE_DIR}" ${INCLUDE_EXT} ${LIB_EXT} ${LIBS}
+	${CXX} ${CXXFLAGS} -c -o $@ $< -I"${INCLUDE_DIR}" $$(depfinder.sh . $<)
 
 clean:
 	rm -f ${BIN_DIR}/* ${BUILD_DIR}/*' >> Makefile
