@@ -16,7 +16,9 @@ echo -n '.project
 .settings/
 bin/
 build/' >> .gitignore
-echo -n 'CXX=g++
+echo -n 'SHELL=/bin/bash
+
+CXX=g++
 CXXFLAGS=-std=c++11
 
 BIN_DIR=bin/
@@ -33,11 +35,13 @@ LIBS=
 
 all: ${TARGETS}
 
-${TARGETS}: ${BIN_DIR}/%: ${SRC_DIR}/%.cc ${OBJS} 
-	${CXX} ${CXXFLAGS} -o $@ $^ -I"${INCLUDE_DIR}" $$(depfinder.sh . $<)
+${TARGETS}: ${BIN_DIR}/%: ${SRC_DIR}/%.cc ${OBJS}
+	readarray -d '' deps < <(depfinder.sh . $<);\
+	${CXX} ${CXXFLAGS} -o $@ $^ -I"${INCLUDE_DIR}" "$${deps[@]}" ${LIBS}
 	
 ${OBJS}: ${BUILD_DIR}/%.o: ${SRC_DIR}/%.cc  ${INCLUDE_DIR}/%.hh
-	${CXX} ${CXXFLAGS} -c -o $@ $< -I"${INCLUDE_DIR}" $$(depfinder.sh . $<)
+	readarray -d '' deps < <(depfinder.sh . $<);\
+	${CXX} ${CXXFLAGS} -c -o $@ $< -I"${INCLUDE_DIR}" "$${deps[@]}"
 
 clean:
 	rm -f ${BIN_DIR}/* ${BUILD_DIR}/*' >> Makefile
@@ -48,4 +52,4 @@ echo -n 'main (int argc, char** argv) {
 git init
 git checkout -b devel
 git add .
-git commit -m "First commit"
+git commit -m "First commit, produced by init_cpp_project.sh"
