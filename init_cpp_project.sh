@@ -36,11 +36,11 @@ LIBS=
 all: ${TARGETS}
 
 ${TARGETS}: ${BIN_DIR}/%: ${SRC_DIR}/%.cc ${OBJS}
-	readarray -d '' deps < <(depfinder.sh . $<);\
+	readarray deps < <(depfinder.sh . $<);\
 	${CXX} ${CXXFLAGS} -o $@ $^ -I"${INCLUDE_DIR}" "$${deps[@]}" ${LIBS}
 	
 ${OBJS}: ${BUILD_DIR}/%.o: ${SRC_DIR}/%.cc  ${INCLUDE_DIR}/%.hh
-	readarray -d '' deps < <(depfinder.sh . $<);\
+	readarray deps < <(depfinder.sh . $<);\
 	${CXX} ${CXXFLAGS} -c -o $@ $< -I"${INCLUDE_DIR}" "$${deps[@]}"
 
 clean:
