@@ -15,7 +15,9 @@ echo -n '.project
 .cproject
 .settings/
 bin/
-build/' >> .gitignore
+build/
+includes
+libs' >> .gitignore
 echo -n 'SHELL=/bin/bash
 
 CXX=g++
