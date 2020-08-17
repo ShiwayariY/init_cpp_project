@@ -1,8 +1,10 @@
 #!/bin/bash
 
+[[ $# -eq 1 ]] || { echo "Usage: $0 <project_name>"; exit 1; }
+
 this_script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null 2>&1 && pwd)"
 
-if ![ -d "${this_script_dir}" ]; then
+if ! [ -d "${this_script_dir}" ]; then
 	echo "Error: failed to locate install script"
 	exit 1
 fi

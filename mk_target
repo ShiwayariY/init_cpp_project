@@ -1,0 +1,89 @@
+#!/bin/bash
+
+if ! [[ -s dependencies ]]; then
+	echo "$depends_template" > dependencies
+	echo "dependencies not set .. creating template"
+	exit 1
+else
+	while read -r dep; do
+		grep -qE "^$dep" || echo "$dep" >> dependencies
+	done <<< "$depends_template"
+fi
+
+cmake_defines=()
+while read -r line; do
+	echo "${line}" | grep -qE '^[[:space:]]*$' || cmake_defines+=("-D${line}")
+done < dependencies
+
+########################## identify platform #########################
+
+env="$(uname)"
+env="${env,,}"
+if [[ "$env" =~ cygwin ]]; then
+	env="cygwin"
+elif [[ "$env" =~ msys ]]; then
+	env="msys"
+elif [[ "$env" =~ linux ]]; then
+	env="linux"
+else
+	echo "Error: unsupported platform. Add additional platform to this script to continue."
+	exit 1
+fi
+
+mkdir -p {build,lib,bin}/"${env}"/{Debug,Release}
+
+########################## target setup #########################
+
+if [[ $# -eq 0 ]]; then
+	ac="install"
+	ac_type="Release"
+
+elif [[ $# -eq 1 ]] && [[ "${1,,}" =~ ^d(ebug)?$ ]]; then
+	ac="install"
+	ac_type="Debug"
+
+elif [[ $# -eq 1 ]] && [[ "${1,,}" =~ ^b(uild)?$ ]]; then
+	ac="build"
+	ac_type="Release"
+
+elif [[ $# -eq 2 ]] && [[ "${1,,}" =~ ^b(uild)?$ ]] && [[ "${2,,}" =~ ^d(ebug)?$ ]]; then
+	ac="build"
+	ac_type="Debug"
+
+elif [[ $# -eq 1 ]] && [[ "${1,,}" =~ ^c(lean)?$ ]]; then
+	ac="clean"
+	ac_type="Release"
+
+elif [[ $# -eq 2 ]] && [[ "${1,,}" =~ ^c(lean)?$ ]] && [[ "${2,,}" =~ ^d(ebug)?$ ]]; then
+	ac="clean"
+	ac_type="Debug"
+
+elif [[ $# -eq 1 ]] && [[ "$1" == "clear" ]]; then
+	ac="clear"
+
+else
+	echo "Error: invalid target '$@'"
+	exit 1
+fi
+
+########################## run target #########################
+
+build_dir="build/${env}/${ac_type}"
+
+if [[ "$ac" == "install" ]]; then
+	cd "$build_dir"
+	make install
+
+elif [[ "$ac" == "build" ]]; then
+	cd "$build_dir"
+	cmake -DCMAKE_BUILD_TYPE="$ac_type" -DPLATFORM="$env" "${cmake_defines[@]}" ../../..
+
+elif [[ "$ac" == "clean" ]]; then
+	rm -rf {bin,lib}/"${env}/${ac_type}"/*
+	cd "$build_dir"
+	make clean
+
+elif [[ "$ac" == "clear" ]]; then
+	rm -rf {build,lib,bin}/"${env}"/*/*
+
+fi
