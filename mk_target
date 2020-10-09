@@ -6,7 +6,7 @@ if ! [[ -s dependencies ]]; then
 	exit 1
 else
 	while read -r dep; do
-		grep -qE "^$dep" || echo "$dep" >> dependencies
+		grep -qE "^$dep" dependencies || echo "$dep" >> dependencies
 	done <<< "$depends_template"
 fi
 
