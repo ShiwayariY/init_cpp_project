@@ -46,7 +46,7 @@ elif [[ $# -eq 1 ]] && [[ "${1,,}" =~ ^b(uild)?$ ]]; then
 	ac="build"
 	ac_type="Release"
 
-elif [[ $# -eq 2 ]] && [[ "${1,,}" =~ ^b(uild)?$ ]] && [[ "${2,,}" =~ ^d(ebug)?$ ]]; then
+elif [[ $# -eq 2 ]] && [[ "${1,,}" =~ ^b(uild)?$ ]] && [[ "${2,,}" =~ ^d(ebug)?$ ]] || [[ $# -eq 1 ]] && [[ "${1,,}" =~ ^b(uild)?-?d(ebug)?$ ]]; then
 	ac="build"
 	ac_type="Debug"
 
@@ -54,7 +54,7 @@ elif [[ $# -eq 1 ]] && [[ "${1,,}" =~ ^c(lean)?$ ]]; then
 	ac="clean"
 	ac_type="Release"
 
-elif [[ $# -eq 2 ]] && [[ "${1,,}" =~ ^c(lean)?$ ]] && [[ "${2,,}" =~ ^d(ebug)?$ ]]; then
+elif [[ $# -eq 2 ]] && [[ "${1,,}" =~ ^c(lean)?$ ]] && [[ "${2,,}" =~ ^d(ebug)?$ ]] || [[ $# -eq 1 ]] && [[ "${1,,}" =~ ^c(lean)?-?d(ebug)?$ ]]; then
 	ac="clean"
 	ac_type="Debug"
 
