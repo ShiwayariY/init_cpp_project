@@ -76,7 +76,8 @@ if [[ "$ac" == "install" ]]; then
 
 elif [[ "$ac" == "build" ]]; then
 	cd "$build_dir"
-	cmake -DCMAKE_BUILD_TYPE="$ac_type" -DPLATFORM="$env" "${cmake_defines[@]}" ../../..
+#	[[ "$env" == "msys" ]]; generator_flags=( "-G" "MinGW Makefiles" )
+	cmake "${generator_flags[@]}" -DCMAKE_BUILD_TYPE="$ac_type" -DPLATFORM="$env" "${cmake_defines[@]}" ../../..
 
 elif [[ "$ac" == "clean" ]]; then
 	rm -rf {bin,lib}/"${env}/${ac_type}"/*
