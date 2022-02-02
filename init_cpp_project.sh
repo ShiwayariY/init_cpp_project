@@ -13,7 +13,7 @@ git_local_user=""
 git_local_email=""
 git_local_sshkey=""
 
-while getopts "u:e:s:"; do
+while getopts "u:e:s:" opt; do
 	case "$opt" in
 		u)
 			git_local_user="$OPTARG"
@@ -29,6 +29,7 @@ done
 shift $((OPTIND-1))
 
 if [[ $# -ne 1 ]]; then
+	echo "Error: invalid number of positional args"
 	echo "$usage"
 	exit 1
 fi
