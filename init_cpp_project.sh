@@ -68,7 +68,7 @@ sed 's/project_name/'"${target_dir}"'/g' "${this_script_dir}/CMakeLists_template
 git init
 [[ "${git_local_user}" == "" ]] || git config --local --add user.name "${git_local_user}"
 [[ "${git_local_email}" == "" ]] || git config --local --add user.email "${git_local_email}"
-[[ "${git_local_sshkey}" == "" ]] || git config --local core.sshCommand "/usr/bin/ssh/ -i ${git_local_sshkey}"
+[[ "${git_local_sshkey}" == "" ]] || git config --local core.sshCommand "/usr/bin/ssh -i '${git_local_sshkey}'"
 git add .
 git commit -m "First commit, created by init_cpp_project.sh"
 git checkout -b devel
